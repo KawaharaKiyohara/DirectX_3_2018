@@ -3,7 +3,6 @@
  */
 cbuffer PSCb : register( b0 ){
 	float4 mulColor;
-	float4 addColor;
 };
 
 //--------------------------------------------------------------------------------------
@@ -23,6 +22,5 @@ float4 PS( float4 pos : SV_POSITION ) : SV_Target
 {
 	float4 color = float4( 1.0f, 1.0f, 1.0f, 1.0f);
 	color *= mulColor;
-	color += addColor;
     return color; 
 }
