@@ -87,8 +87,10 @@ public:
 		shared_ptr<C3DModelEffect> effect = make_shared< C3DModelEffect>();
 		if (info.diffuseTexture && *info.diffuseTexture) {
 			//このマテリアルにはディフューズ(アルベド)テクスチャが張られている。
+			//アルベドテクスチャをロードする。
 			ID3D11ShaderResourceView* texSRV;
 			DirectX::EffectFactory::CreateTexture(info.diffuseTexture, deviceContext, &texSRV);
+			//ロードしたテクスチャをエフェクトに設定する。
 			effect->SetAlbedoTexture(texSRV);
 		}
 		return effect;
