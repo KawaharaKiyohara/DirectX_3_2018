@@ -12,7 +12,7 @@ protected:
 	Shader* m_pPSShader = nullptr;
 	Shader m_vsShader;
 	Shader m_psShader;
-	bool isSkining;
+	bool isSkining = false;
 	ID3D11ShaderResourceView* m_albedoTex = nullptr;
 
 public:

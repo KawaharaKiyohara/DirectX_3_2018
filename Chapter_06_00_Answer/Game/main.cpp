@@ -128,7 +128,7 @@ public:
 		HRESULT hr = DirectX::CreateDDSTextureFromFileEx(
 			g_graphicsEngine->GetD3DDevice(), L"Assets/modelData/utc_all2.dds", 0,
 			D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
-			false, nullptr, &m_grayTextureSRV);
+			false, nullptr, &m_albedoTextureSRV);
 	}
 	//グレイテクスチャを初期化。
 	void InitGrayTexture()
@@ -137,7 +137,7 @@ public:
 		HRESULT hr = DirectX::CreateDDSTextureFromFileEx(
 			g_graphicsEngine->GetD3DDevice(), L"Assets/modelData/utc_all2_gray.dds", 0,
 			D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
-			false, nullptr, &m_albedoTextureSRV);
+			false, nullptr, &m_grayTextureSRV);
 	}
 	//サンプラステートの初期化。
 	void InitSamplerState()
