@@ -14,7 +14,7 @@ struct SDirectionLight {
 	CVector4 color;			//ライトのカラー。
 };
 
-/*!
+/*!解説①　ライト構造体を用意した。
 *@brief	ライト構造体。
 */
 struct SLight {
@@ -22,7 +22,7 @@ struct SLight {
 	CVector3			eyePos;				//視点の座標。
 	float				specPow;			//鏡面反射の絞り。
 };
-/*!
+/*!解説②　16の倍数に切り上げる処理を関数化。
 *@brief	引数で渡された整数値を16の倍数に切り上げます。
 *@param[in]		n		整数の値。
 *@return		nを16の倍数に切り上げた値。
@@ -98,7 +98,7 @@ class C3DModelDraw {
 	unique_ptr<DirectX::Model>		m_modelDx;				//DirectXTKが提供するモデル。
 	ID3D11Buffer*		m_cb = nullptr;						//!<定数バッファ。
 	ID3D11Buffer*		m_lightCb = nullptr;				//!<ライト用の定数バッファ。
-	SLight				m_light;							//!<ライト構造体。
+	SLight				m_light;							//!<ライト構造体。解説③　ライト用の構造体を使うように変更。
 	ID3D11SamplerState* m_samplerState = nullptr;			//!<サンプラーステート。
 	ID3D11ShaderResourceView* m_albedoTextureSRV = nullptr;	//!<アルベドテクスチャのSRV
 public:
@@ -225,6 +225,7 @@ public:
 		vsCb.mProj = g_camera3D.GetProjectionMatrix();
 		vsCb.mView = g_camera3D.GetViewMatrix();
 		deviceContext->UpdateSubresource(m_cb, 0, nullptr, &vsCb, 0, 0);
+		//解説④　視点を更新
 		//視点を設定。
 		m_light.eyePos = g_camera3D.GetPosition();
 		//ライト用の定数バッファを更新。

@@ -89,21 +89,21 @@ float4 PSMain( PSInput In ) : SV_Target0
 		//実習　鏡面反射を計算しなさい。
 		//① ライトを当てる面から視点に伸びるベクトルtoEyeDirを求める。
 		//	 視点の座標は定数バッファで渡されている。LightCbを参照するように。
-	
+		float3 toEyeDir = normalize( eyePos - In.worldPos );
 		
 		//② １で求めたtoEyeDirの反射ベクトルを求める。
-	
+		float3 reflectEyeDir = -toEyeDir + 2 * dot( In.Normal, toEyeDir) * In.Normal;
 		
 		//③ ２で求めた反射ベクトルとディレクションライトの方向との内積を取って、スペキュラの強さを計算する。
-	
+		float t = max( 0.0f, dot( -directionLight.direction, reflectEyeDir));
 		
 		//④ pow関数を使って、スペキュラを絞る。絞りの強さは定数バッファで渡されている。
 		//	 LightCbを参照するように。
-	
+		float3 specLig = pow( t, specPow ) * directionLight.color.xyz;
 		
 		//⑤ スペキュラ反射が求まったら、ligに加算する。
 		//鏡面反射を反射光に加算する。
-	
+		lig += specLig;
 	}
 	float4 finalColor = float4( 0.0f, 0.0f, 0.0f, 1.0f );
 	finalColor.xyz = albedoColor.xyz * lig;
