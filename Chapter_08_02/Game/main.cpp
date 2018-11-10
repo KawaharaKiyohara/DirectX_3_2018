@@ -6,6 +6,7 @@
 using namespace std;
 
 
+
 /// <summary>
 /// カメラの更新
 /// </summary>
@@ -34,21 +35,21 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	InitGame(hInstance, hPrevInstance, lpCmdLine, nCmdShow, "Game");
 	
 	//カメラを設定。
-	g_camera3D.SetPosition({ 0.0f, 200.0f, 500.0f });
+	g_camera3D.SetPosition({ 0.0f, 1000.0f, 2200.0f });
 	g_camera3D.SetTarget({ 0.0f, 200.0f, 0.0f });
 	g_camera3D.Update();
-	//オブジェクトの座標
-	CVector3 pos1, pos2;
-	pos1 = { 0.0f, 0.0f, 0.0f };
-	pos2 = { 100.0f, 0.0f, -100.0f };
 
-	//手前に描くモデルを初期化。
-	C3DModelDraw modelDraw1;
-	modelDraw1.Init(L"Assets/modelData/unityChan.cmo");
+	//ユニティちゃんの座標
+	CVector3 unityChanPos;
+	unityChanPos = { 0.0f, 0.0f, 0.0f };
 
-	//奥に描くモデルを初期化。
-	C3DModelDraw modelDraw2;
-	modelDraw2.Init(L"Assets/modelData/unityChan.cmo");
+	//キャラクタモデルを初期化。
+	C3DModelDraw unitChanModelDraw;
+	unitChanModelDraw.Init(L"Assets/modelData/unityChan.cmo");
+	
+	//背景モデルを初期化。
+	C3DModelDraw bgModelDraw;
+	bgModelDraw.Init(L"Assets/modelData/bg.cmo");
 	
 	//Hands-On 奥のモノを手前に描画する深度ステンシルステートを作ってみよう。
 	D3D11_DEPTH_STENCIL_DESC desc = { 0 };
@@ -72,6 +73,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	ID3D11DepthStencilState* depthStencilState;
 	d3ddevice->CreateDepthStencilState(&desc, &depthStencilState);
 	
+	int renderMode = 0;	//０なら通常描画、１ならシルエット描画。
+
+
 	//ゲームループ。
 	while (DispatchWindowMessage() == true)
 	{
@@ -85,24 +89,36 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		}
 		//カメラを更新。
 		UpdateCamera();
-		//奥のモデルだけ左右に動かす。
+		//ユニティちゃんを左右に動かす。
 		//ゲームパッドがない人は4と6で動かせるよ。
 		if (g_pad[0].IsPress(enButtonLeft) == true) {
-			pos2.x += 2.0f;
+			unityChanPos.x += 15.0f;
 		}
 		if (g_pad[0].IsPress(enButtonRight) == true) {
-			pos2.x -= 2.0f;
+			unityChanPos.x -= 15.0f;
 		}
-		//Chapter 8.1.2 Hands-On 描画する順番を変えることで正しく描画されることを確認する。
-
-		//手前に描画。
-		modelDraw1.Update(pos1);
-		modelDraw1.Draw();
-
-		//奥に描画。
-		modelDraw2.Update(pos2);
-		modelDraw2.Draw();
+		if (g_pad[0].IsPress(enButtonDown) == true) {
+			unityChanPos.z += 15.0f;
+		}
+		if (g_pad[0].IsPress(enButtonUp) == true) {
+			unityChanPos.z -= 15.0f;
+		}
 		
+		//通常描画モードにする。。
+		renderMode = 0;
+		//背景を描画。
+		bgModelDraw.Draw(renderMode);
+
+		//ユニティちゃんは先にシルエットを描画してから、普通に描く。
+		renderMode = 1;
+		//ユニティちゃんを描画。
+		unitChanModelDraw.Update(unityChanPos);
+		unitChanModelDraw.Draw(renderMode);
+
+		//キャラを通常レンダリング。
+		renderMode = 0;
+		unitChanModelDraw.Draw(renderMode);
+
 		//描画終了。
 		g_graphicsEngine->EndRender();
 	}

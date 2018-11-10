@@ -45,7 +45,7 @@ void C3DModelDraw::Init(const wchar_t* filePath)
 		false
 	);
 }
-void C3DModelDraw::Draw()
+void C3DModelDraw::Draw(int renderMode)
 {
 	auto deviceContext = g_graphicsEngine->GetD3DDeviceContext();
 	DirectX::CommonStates state(g_graphicsEngine->GetD3DDevice());
@@ -66,6 +66,11 @@ void C3DModelDraw::Draw()
 	//サンプラステートを設定する。
 	deviceContext->PSSetSamplers(0, 1, &m_samplerState);
 
+	//エフェクトにクエリを行う。
+	m_modelDx->UpdateEffects([&](DirectX::IEffect* material) {
+		auto modelMaterial = reinterpret_cast<C3DModelEffect*>(material);
+		modelMaterial->SetRenderMode(renderMode);
+	});
 	m_modelDx->Draw(
 		deviceContext,
 		state,

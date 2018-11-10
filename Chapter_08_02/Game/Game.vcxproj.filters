@@ -108,6 +108,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="C3DModelDraw.cpp" />
+    <ClCompile Include="C3DModelEffect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="math\Vector.h">
@@ -193,9 +194,13 @@
     </ClInclude>
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="C3DModelDraw.h" />
+    <ClInclude Include="C3DModelEffect.h" />
   </ItemGroup>
   <ItemGroup>
     <MeshContentTask Include="Assets\modelData\unityChan.fbx">
+      <Filter>Assets\modelData</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="Assets\modelData\bg.fbx">
       <Filter>Assets\modelData</Filter>
     </MeshContentTask>
   </ItemGroup>
