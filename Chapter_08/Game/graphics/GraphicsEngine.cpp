@@ -118,7 +118,9 @@ void GraphicsEngine::Init(HWND hWnd)
 		texDesc.Height = (UINT)FRAME_BUFFER_H;
 		texDesc.MipLevels = 1;
 		texDesc.ArraySize = 1;
+		//HandsOn 16bitのZバッファを試してみよう。
 		texDesc.Format = DXGI_FORMAT_D32_FLOAT;
+		//texDesc.Format = DXGI_FORMAT_D16_UNORM;
 		texDesc.SampleDesc.Count = 1;
 		texDesc.SampleDesc.Quality = 0;
 		texDesc.Usage = D3D11_USAGE_DEFAULT;

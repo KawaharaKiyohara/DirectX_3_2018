@@ -49,12 +49,37 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	//奥に描くモデルを初期化。
 	C3DModelDraw modelDraw2;
 	modelDraw2.Init(L"Assets/modelData/unityChan2.cmo");
+	
+	//Hands-On 奥のモノを手前に描画する深度ステンシルステートを作ってみよう。
+	D3D11_DEPTH_STENCIL_DESC desc = { 0 };
+	desc.DepthEnable = true;
+	desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	desc.DepthFunc = D3D11_COMPARISON_GREATER;
+	desc.StencilEnable = false;
+	desc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	desc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	desc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	desc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	desc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	desc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	desc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	//D3Dデバイスを取得。
+	auto d3ddevice = g_graphicsEngine->GetD3DDevice();
+	//デプスステンシルステートを作成。
+	ID3D11DepthStencilState* depthStencilState;
+	d3ddevice->CreateDepthStencilState(&desc, &depthStencilState);
+	
 	//ゲームループ。
 	while (DispatchWindowMessage() == true)
 	{
 		//描画開始。
 		g_graphicsEngine->BegineRender();
 		
+		//手前に描画を行うデプスステンシルステートを設定する。
+		g_graphicsEngine->GetD3DDeviceContext()->OMSetDepthStencilState(depthStencilState, 0);
 		for (auto& pad : g_pad) {
 			pad.Update();
 		}
