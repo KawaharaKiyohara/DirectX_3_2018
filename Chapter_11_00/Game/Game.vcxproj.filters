@@ -216,7 +216,7 @@
     </MeshContentTask>
   </ItemGroup>
   <ItemGroup>
-    <ImageContentTask Include="Assets\sprite\test.jpg">
+    <ImageContentTask Include="Assets\sprite\test.png">
       <Filter>Assets\sprite</Filter>
     </ImageContentTask>
   </ItemGroup>

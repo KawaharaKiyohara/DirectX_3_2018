@@ -38,11 +38,17 @@ public:
 		return &m_shadowMap;
 	}
 private:
-	CVector3 m_unityChanPos = { 0.0f, 0.0f, 0.0f };	//ユニティちゃんの座標。
-	C3DModelDraw m_unityChanModelDraw;		//ユニティちゃんのモデルの描画処理。。
-	C3DModelDraw m_bgModelDraw;				//背景のモデルの描画処理。
-	Sprite m_sprite;						//スプライト。
-	ShadowMap m_shadowMap;					//シャドウマップ。
+	/// <summary>
+	/// 半透明合成のブレンドステートを初期化。
+	/// </summary>
+	void InitTranslucentBlendState();
+private:
+	CVector3 m_unityChanPos = { 0.0f, 0.0f, 0.0f };			//ユニティちゃんの座標。
+	C3DModelDraw m_unityChanModelDraw;						//ユニティちゃんのモデルの描画処理。。
+	C3DModelDraw m_bgModelDraw;								//背景のモデルの描画処理。
+	ID3D11BlendState* m_translucentBlendState = nullptr;	//半透明合成用のブレンドステート。
+	Sprite m_sprite;										//スプライト。
+	ShadowMap m_shadowMap;									//シャドウマップ。
 };
 
 

@@ -176,7 +176,7 @@
     <MeshContentTask Include="Assets\modelData\unityChan.fbx" />
   </ItemGroup>
   <ItemGroup>
-    <ImageContentTask Include="Assets\sprite\test.jpg" />
+    <ImageContentTask Include="Assets\sprite\test.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

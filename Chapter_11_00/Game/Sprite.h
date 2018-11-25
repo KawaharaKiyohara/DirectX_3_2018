@@ -1,5 +1,6 @@
 #pragma once
 #include "graphics/Shader.h"
+#include <algorithm>
 
 /// <summary>
 /// スプライトクラス。
@@ -38,11 +39,26 @@ public:
 	///	UnityのuGUIに準拠。
 	/// </param>
 	void Update(const CVector3& trans, const CQuaternion& rot, const CVector3& scale, CVector2 pivot = {0.5f, 0.5f});
-
 	/// <summary>
 	/// 描画
 	/// </summary>
 	void Draw();
+	/// <summary>
+	/// αを変位させる
+	/// </summary>
+	/// <param name="delta">乗算αを変位させる量</param>
+	void DeltaAlpha(float delta)
+	{
+		m_alpha += delta;
+		//数値の境界チェック。
+		if (m_alpha > 1.0f) {
+			m_alpha = 1.0f;
+		}
+		else if (m_alpha < 0.0f) {
+			m_alpha = 0.0f;
+		}
+	}
+
 private:
 
 	/// <summary>
@@ -69,6 +85,7 @@ private:
 private:
 	struct ConstantBuffer {
 		CMatrix WVP;		//ワールドビュープロジェクション行列。
+		float alpha;		//α値。
 	};
 	ID3D11Buffer*				m_vertexBuffer = NULL;					//頂点バッファ。
 	ID3D11Buffer*				m_indexBuffer = NULL;					//インデックスバッファ。
@@ -82,6 +99,7 @@ private:
 	CMatrix						m_world = CMatrix::Identity();			//ワールド行列。
 	CVector2					m_size = CVector2::Zero();				//画像のサイズ。
 	ID3D11Buffer*				m_cb = nullptr;							//定数バッファ。
+	float						m_alpha = 1.0f;							//スプライトのα値。
 
 };
 
