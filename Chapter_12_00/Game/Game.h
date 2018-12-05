@@ -3,6 +3,7 @@
 #include "C3DModelDraw.h"
 #include "RenderTarget.h"
 #include "ShadowMap.h"
+#include "Sprite.h"
 
 /// <summary>
 /// ゲームクラス。
@@ -56,6 +57,11 @@ private:
 	/// <param name="renderTarget">レンダリングターゲット</param>
 	/// <param name="viewport">ビューポート</param>
 	void ChangeRenderTarget(ID3D11DeviceContext* d3dDeviceContext, RenderTarget* renderTarget, D3D11_VIEWPORT* viewport);
+	void ChangeRenderTarget(ID3D11DeviceContext* d3dDeviceContext, ID3D11RenderTargetView* renderTarget, ID3D11DepthStencilView* depthStensil, D3D11_VIEWPORT* viewport);
+	/// <summary>
+	/// カメラを初期化。
+	/// </summary>
+	void InitCamera();
 private:
 	RenderTarget m_mainRenderTarget;		//メインレンダリングターゲット。
 	CVector3 m_unityChanPos = { 0.0f, 0.0f, 0.0f };	//ユニティちゃんの座標。
@@ -63,7 +69,7 @@ private:
 	C3DModelDraw m_bgModelDraw;				//背景のモデルの描画処理。
 	ShadowMap m_shadowMap;					//シャドウマップ。
 
-	
+	Sprite m_copyMainRtToFrameBufferSprite;			//メインレンダリングターゲットに描かれた絵をフレームバッファにコピーするためのスプライト。
 	D3D11_VIEWPORT m_frameBufferViewports;			//フレームバッファのビューポート。
 	ID3D11RenderTargetView* m_frameBufferRenderTargetView = nullptr;	//フレームバッファのレンダリングターゲットビュー。
 	ID3D11DepthStencilView* m_frameBufferDepthStencilView = nullptr;	//フレームバッファのデプスステンシルビュー。

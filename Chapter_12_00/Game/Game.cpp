@@ -1,32 +1,33 @@
 #include "stdafx.h"
 #include "Game.h"
 
-
 Game::Game()
 {
-	//カメラを設定。
-	g_camera3D.SetPosition({ 0.0f, 1000.0f, 2200.0f });
-	g_camera3D.SetTarget({ 0.0f, 200.0f, 0.0f });
-	g_camera3D.Update();
+	//カメラを初期化。
+	InitCamera();
 	//Unityちゃんのモデルを初期化。
 	m_unityChanModelDraw.Init(L"Assets/modelData/unityChan.cmo");
 	//背景モデルの初期化処理。
 	m_bgModelDraw.Init(L"Assets/modelData/bg.cmo");
 	//地面をシャドウレシーバーにする。
 	m_bgModelDraw.SetShadowReciever(true);
-
-	//フレームバッファののレンダリングターゲットをバックアップしておく。
-	auto d3dDeviceContext = g_graphicsEngine->GetD3DDeviceContext();
-	d3dDeviceContext->OMGetRenderTargets(
-		1,
-		&m_frameBufferRenderTargetView,
-		&m_frameBufferDepthStencilView
+	
+	//メインとなるレンダリングターゲットを作成する。
+	m_mainRenderTarget.Create(
+		FRAME_BUFFER_W,
+		FRAME_BUFFER_H,
+		DXGI_FORMAT_R8G8B8A8_UNORM
 	);
-	//ビューポートもバックアップを取っておく。
-	unsigned int numViewport = 1;
-	D3D11_VIEWPORT oldViewports;
-	d3dDeviceContext->RSGetViewports(&numViewport, &m_frameBufferViewports);
 
+	
+
+	//メインレンダリングターゲットに描かれた絵を
+	//フレームバッファにコピーするためのスプライトを初期化する。
+	m_copyMainRtToFrameBufferSprite.Init(
+		m_mainRenderTarget.GetRenderTargetSRV(),
+		FRAME_BUFFER_W,
+		FRAME_BUFFER_H
+	);
 }
 
 Game::~Game()
@@ -39,21 +40,39 @@ Game::~Game()
 	}
 }
 
-
+void Game::InitCamera()
+{
+	g_camera3D.SetPosition({ 0.0f, 1000.0f, 2200.0f });
+	g_camera3D.SetTarget({ 0.0f, 200.0f, 0.0f });
+	g_camera3D.Update();
+	g_camera2D.SetUpdateProjMatrixFunc(Camera::enUpdateProjMatrixFunc_Ortho);
+	g_camera2D.SetWidth(FRAME_BUFFER_W);
+	g_camera2D.SetHeight(FRAME_BUFFER_H);
+	g_camera2D.SetPosition({0.0f, 0.0f, -10.0f});
+	g_camera2D.SetTarget(CVector3::Zero());
+	g_camera2D.Update();
+}
 void Game::ChangeRenderTarget(ID3D11DeviceContext* d3dDeviceContext, RenderTarget* renderTarget, D3D11_VIEWPORT* viewport)
 {
-	auto d3dDeviceContext = g_graphicsEngine->GetD3DDeviceContext();
+	ChangeRenderTarget(
+		d3dDeviceContext, 
+		renderTarget->GetRenderTargetView(), 
+		renderTarget->GetDepthStensilView(), 
+		viewport
+	);
+}
+void Game::ChangeRenderTarget(ID3D11DeviceContext* d3dDeviceContext, ID3D11RenderTargetView* renderTarget, ID3D11DepthStencilView* depthStensil, D3D11_VIEWPORT* viewport)
+{
 	ID3D11RenderTargetView* rtTbl[] = {
-		renderTarget->GetRenderTargetView()
+		renderTarget
 	};
 	//レンダリングターゲットの切り替え。
-	d3dDeviceContext->OMSetRenderTargets(1, rtTbl, renderTarget->GetDepthStensilView());
+	d3dDeviceContext->OMSetRenderTargets(1, rtTbl, depthStensil);
 	if (viewport != nullptr) {
 		//ビューポートが指定されていたら、ビューポートも変更する。
 		d3dDeviceContext->RSSetViewports(1, viewport);
 	}
 }
-
 void Game::Update()
 {
 	//ゲームパッドの更新。
@@ -72,13 +91,6 @@ void Game::Update()
 		{ 1000.0f, 1000.0f, 1000.0f },
 		{ 0.0f, 0.0f, 0.0f }
 	);
-
-	//メインとなるレンダリングターゲットを作成する。
-	m_mainRenderTarget.Create(
-		FRAME_BUFFER_W,
-		FRAME_BUFFER_H,
-		DXGI_FORMAT_R8G8B8A8_UNORM
-	);
 }
 
 void Game::PreRender()
@@ -92,7 +104,9 @@ void Game::ForwordRender()
 	//レンダリングターゲットをメインに変更する。
 	auto d3dDeviceContext = g_graphicsEngine->GetD3DDeviceContext();
 	ChangeRenderTarget(d3dDeviceContext, &m_mainRenderTarget, &m_frameBufferViewports);
-	
+	float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	m_mainRenderTarget.ClearRenderTarget(clearColor);
+
 	m_bgModelDraw.Draw(
 		enRenderMode_Normal,
 		g_camera3D.GetViewMatrix(),
@@ -106,21 +120,35 @@ void Game::ForwordRender()
 }
 void Game::PostRender()
 {
+	//レンダリングターゲットをフレームバッファに戻す。
+	auto d3dDeviceContext = g_graphicsEngine->GetD3DDeviceContext();
+	ChangeRenderTarget(
+		d3dDeviceContext,
+		m_frameBufferRenderTargetView,
+		m_frameBufferDepthStencilView,
+		&m_frameBufferViewports
+	);
+	//ドロドロ
+	m_copyMainRtToFrameBufferSprite.Draw();
+	
+	m_frameBufferRenderTargetView->Release();
+	m_frameBufferDepthStencilView->Release();
 }
 void Game::Render()
 {
-	//レンダリングターゲットをフレームバッファに戻す。
-	auto d3dDeviceContext = g_graphicsEngine->GetD3DDeviceContext();
-	//元に戻す。
-	d3dDeviceContext->OMSetRenderTargets(
-		1,
-		&m_frameBufferRenderTargetView,
-		m_frameBufferDepthStencilView
-	);
-	d3dDeviceContext->RSSetViewports(1, &m_frameBufferViewports);
-
 	//描画開始。
 	g_graphicsEngine->BegineRender();
+	//フレームバッファののレンダリングターゲットをバックアップしておく。
+	auto d3dDeviceContext = g_graphicsEngine->GetD3DDeviceContext();
+	d3dDeviceContext->OMGetRenderTargets(
+		1,
+		&m_frameBufferRenderTargetView,
+		&m_frameBufferDepthStencilView
+	);
+	//ビューポートもバックアップを取っておく。
+	unsigned int numViewport = 1;
+	d3dDeviceContext->RSGetViewports(&numViewport, &m_frameBufferViewports);
+
 	//プリレンダリング
 	PreRender();
 	
