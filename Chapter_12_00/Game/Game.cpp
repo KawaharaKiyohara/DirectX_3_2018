@@ -19,8 +19,6 @@ Game::Game()
 		DXGI_FORMAT_R8G8B8A8_UNORM
 	);
 
-	
-
 	//メインレンダリングターゲットに描かれた絵を
 	//フレームバッファにコピーするためのスプライトを初期化する。
 	m_copyMainRtToFrameBufferSprite.Init(
@@ -104,6 +102,7 @@ void Game::ForwordRender()
 	//レンダリングターゲットをメインに変更する。
 	auto d3dDeviceContext = g_graphicsEngine->GetD3DDeviceContext();
 	ChangeRenderTarget(d3dDeviceContext, &m_mainRenderTarget, &m_frameBufferViewports);
+	//メインレンダリングターゲットをクリアする。
 	float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	m_mainRenderTarget.ClearRenderTarget(clearColor);
 

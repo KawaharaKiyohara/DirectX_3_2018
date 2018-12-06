@@ -28,8 +28,7 @@ PSInput VSMain(VSInput In)
 }
 float4 PSMain( PSInput In ) : SV_Target0
 {
+	//テクスチャカラーをそのまま返す。
 	float4 color = colorTexture.Sample(Sampler, In.uv);
-	//CPUから転送されたα値を使用する。
-	color.a	= alpha;
 	return color;
 }
