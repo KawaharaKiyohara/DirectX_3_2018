@@ -19,13 +19,13 @@ Game::Game()
 		DXGI_FORMAT_R8G8B8A8_UNORM
 	);
 
-	//メインレンダリングターゲットに描かれた絵を
-	//フレームバッファにコピーするためのスプライトを初期化する。
-	m_copyMainRtToFrameBufferSprite.Init(
-		m_mainRenderTarget.GetRenderTargetSRV(),
-		FRAME_BUFFER_W,
-		FRAME_BUFFER_H
-	);
+		//メインレンダリングターゲットに描かれた絵を
+		//フレームバッファにコピーするためのスプライトを初期化する。
+		m_copyMainRtToFrameBufferSprite.Init(
+			m_mainRenderTarget.GetRenderTargetSRV(),
+			FRAME_BUFFER_W,
+			FRAME_BUFFER_H
+		);
 }
 
 Game::~Game()
