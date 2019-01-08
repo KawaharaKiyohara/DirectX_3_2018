@@ -16,10 +16,10 @@ Bloom::Bloom()
 
 	//輝度テクスチャをぼかすためのガウシアンブラーを初期化する。
 	ID3D11ShaderResourceView* srcBlurTexture = m_luminanceRT.GetRenderTargetSRV();
-	for (auto& gaussianBlur : m_gausianBlur) {
-		gaussianBlur.Init(srcBlurTexture, 25.0f);
+	for (int i = 0; i < NUM_DOWN_SAMPLE; i++){
+		m_gausianBlur[i].Init(srcBlurTexture, 25.0f);
 		//次のガウスブラーで使用するソーステクスチャを設定する。
-		srcBlurTexture = gaussianBlur.GetResultTextureSRV();
+		srcBlurTexture = m_gausianBlur[i].GetResultTextureSRV();
 	}
 }
 
@@ -103,10 +103,8 @@ void Bloom::Draw(PostEffect& postEffect)
 		postEffect.DrawFullScreenQuadPrimitive(deviceContext, m_vs, m_psLuminance);
 	}
 	//続いて、輝度テクスチャをガウシアンブラーでぼかす。
-	{
-		for (auto& gaussianBlur : m_gausianBlur) {
-			gaussianBlur.Execute(postEffect);
-		}
+	for (int i = 0; i < NUM_DOWN_SAMPLE; i++ ) {
+		m_gausianBlur[i].Execute(postEffect);
 	}
 
 	//最後にぼかした絵を加算合成でメインレンダリングターゲットに合成して終わり。
