@@ -70,6 +70,7 @@ private:
 	C3DModelDraw m_bgModelDraw;				//背景のモデルの描画処理。
 	ShadowMap m_shadowMap;					//シャドウマップ。
 	PostEffect m_postEffect;				//ポストエフェクト。
+	CVector4 m_ligPower = { 2.0f, 2.0f, 2.0f, 1.0f };
 	Sprite m_copyMainRtToFrameBufferSprite;			//メインレンダリングターゲットに描かれた絵をフレームバッファにコピーするためのスプライト。
 	D3D11_VIEWPORT m_frameBufferViewports;			//フレームバッファのビューポート。
 	ID3D11RenderTargetView* m_frameBufferRenderTargetView = nullptr;	//フレームバッファのレンダリングターゲットビュー。

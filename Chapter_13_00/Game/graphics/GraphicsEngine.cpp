@@ -26,7 +26,11 @@ void GraphicsEngine::BegineRender()
 void GraphicsEngine::EndRender()
 {
 	//バックバッファとフロントバッファを入れ替える。
-	m_pSwapChain->Present(2, 0);
+#ifdef WAIT_VSYNC
+	m_pSwapChain->Present(1, 0);
+#else
+	m_pSwapChain->Present(0, 0);
+#endif
 }
 void GraphicsEngine::Release()
 {
