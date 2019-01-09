@@ -6,7 +6,7 @@
 // Shader Resource View
 /////////////////////////////////////////////////////////////
 Texture2D<float4> g_albedoTexture : register(t0);	//アルベドテクスチャ。
-Texture2D<float4> g_shadowMap : register(t1);		//todo シャドウマップ。
+Texture2D<float4> g_shadowMap : register(t1);		//シャドウマップ。
 /////////////////////////////////////////////////////////////
 // SamplerState
 /////////////////////////////////////////////////////////////
@@ -20,7 +20,6 @@ cbuffer ModelFxConstantBuffer : register(b0){
 	float4x4 mWorld;
 	float4x4 mView;
 	float4x4 mProj;
-	//todo ライトビュー行列を追加。
 	float4x4 mLightView;	//ライトビュー行列。
 	float4x4 mLightProj;	//ライトプロジェクション行列。
 	int isShadowReciever;	//シャドウレシーバーフラグ。
@@ -61,7 +60,7 @@ struct PSInput{
 	float3 Normal		: NORMAL;		//法線。
 	float2 TexCoord		: TEXCOORD0;	//UV座標。
 	float4 posInLVP		: TEXCOORD1;	//ライトビュープロジェクション空間での座標。
-	float4 posInView	: TEXCOORD2;	//todo カメラ空間での座標。
+	float4 posInView	: TEXCOORD2;	//カメラ空間での座標。
 };
 /// <summary>
 /// シャドウマップ用のピクセルシェーダへの入力構造体。
@@ -99,7 +98,7 @@ PSInput VSMain( VSInputNmTxVcTangent In )
 	return psInput;
 }
 
-//todo 複数のレンダリングターゲットに出力するために、構造体を用意。
+///複数のレンダリングターゲットに出力するために、構造体を用意。
 /// <summary>
 /// ピクセルシェーダーからの出力構造体。
 /// </summary>

@@ -74,7 +74,7 @@ private:
 private:
 	CVector4 m_ligPower = { 0.8f, 0.8f, 0.8f, 1.0f };
 	RenderTarget m_mainRenderTarget;		//メインレンダリングターゲット。
-	RenderTarget m_depthRenderTarget;		//todo 深度値の書き込み先となるレンダリングターゲット。
+	RenderTarget m_depthRenderTarget;		//深度値の書き込み先となるレンダリングターゲット。
 	CVector3 m_unityChanPos = { 0.0f, 0.0f, 0.0f };	//ユニティちゃんの座標。
 	C3DModelDraw m_unityChanModelDraw;		//ユニティちゃんのモデルの描画処理。。
 	C3DModelDraw m_unityChanModelDraw2;

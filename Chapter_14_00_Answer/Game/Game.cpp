@@ -31,7 +31,7 @@ Game::Game()
 		FRAME_BUFFER_H,
 		DXGI_FORMAT_R16G16B16A16_FLOAT
 	);
-	//todo カメラ空間での深度値の書き込み先となるレンダリングターゲットを作成する。
+	//カメラ空間での深度値の書き込み先となるレンダリングターゲットを作成する。
 	//フォーマットはR成分のみの32ビット浮動小数点バッファ。
 	m_depthRenderTarget.Create(
 		FRAME_BUFFER_W,
@@ -121,7 +121,7 @@ void Game::PreRender()
 	
 void Game::ForwordRender()
 {
-	//todo レンダリングターゲットを複数設定する。
+	//レンダリングターゲットを複数設定する。
 	//     MRT(Multi rendering target)
 	ID3D11RenderTargetView* rts[] = {
 		m_mainRenderTarget.GetRenderTargetView(),	//0番目はメインレンダリングターゲット
