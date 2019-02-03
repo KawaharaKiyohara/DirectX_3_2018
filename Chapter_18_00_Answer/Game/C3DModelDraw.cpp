@@ -9,10 +9,6 @@ C3DModelDraw::~C3DModelDraw()
 	if (m_cb != nullptr) {
 		m_cb->Release();
 	}
-	//ライト用の定数バッファの解放。
-	if (m_lightCb != nullptr) {
-		m_lightCb->Release();
-	}
 	//サンプラステートを解放。
 	if (m_samplerState != nullptr) {
 		m_samplerState->Release();
@@ -58,6 +54,7 @@ void C3DModelDraw::Draw(EnRenderMode renderMode, CMatrix viewMatrix, CMatrix pro
 	modelFxCb.mView = viewMatrix;
 	modelFxCb.mLightProj = shadowMap->GetLightProjMatrix();
 	modelFxCb.mLightView = shadowMap->GetLighViewMatrix();
+
 	if (m_isShadowReciever == true) {
 		modelFxCb.isShadowReciever = 1;
 	}
@@ -73,19 +70,21 @@ void C3DModelDraw::Draw(EnRenderMode renderMode, CMatrix viewMatrix, CMatrix pro
 	}
 	//スペキュラマップを使用するかどうかのフラグを送る。
 	if (m_specularMapSRV != nullptr) {
-		modelFxCb.isHasSpecuraMap = true;
+			modelFxCb.isHasSpecuraMap = true;
 	}
 	else {
 		modelFxCb.isHasSpecuraMap = false;
 	}
 	deviceContext->UpdateSubresource(m_cb, 0, nullptr, &modelFxCb, 0, 0);
 	//ライト用の定数バッファを更新。
-	deviceContext->UpdateSubresource(m_lightCb, 0, nullptr, &m_dirLight, 0, 0);
+	m_dirLight.eyePos = g_camera3D.GetPosition();
+	auto lightCbGPU = m_lightCbGPU.GetD3D11Buffer();
+	deviceContext->UpdateSubresource(lightCbGPU, 0, nullptr, &m_dirLight, 0, 0);
 
 	//定数バッファをシェーダースロットに設定。
 	deviceContext->VSSetConstantBuffers(0, 1, &m_cb);
 	deviceContext->PSSetConstantBuffers(0, 1, &m_cb);
-	deviceContext->PSSetConstantBuffers(1, 1, &m_lightCb);
+	deviceContext->PSSetConstantBuffers(1, 1, &lightCbGPU);
 	//サンプラステートを設定する。
 	deviceContext->PSSetSamplers(0, 1, &m_samplerState);
 	
@@ -151,6 +150,5 @@ void C3DModelDraw::InitConstantBuffer()
 
 	//続いて、ライト用の定数バッファを作成。
 	//作成するバッファのサイズを変更するだけ。
-	bufferDesc.ByteWidth = sizeof(SDirectionLight);				//SDirectionLightは16byteの倍数になっているので、切り上げはやらない。
-	g_graphicsEngine->GetD3DDevice()->CreateBuffer(&bufferDesc, NULL, &m_lightCb);
+	m_lightCbGPU.Create(nullptr, sizeof(SDirectionLight));
 }

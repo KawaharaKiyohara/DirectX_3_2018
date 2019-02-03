@@ -14,8 +14,7 @@ Game::Game()
 	m_unityChanModelDraw.Init(L"Assets/modelData/unityChan.cmo");
 	m_unityChanModelDraw.SetDirectionLightColor(0, m_ligPower);
 
-	g_unityChanModelDraw_NoNormalMap.Init(L"Assets/modelData/unityChan.cmo");
-	g_unityChanModelDraw_NoNormalMap.SetDirectionLightColor(0, m_ligPower);
+	
 	//Unityちゃんの法線マップをロード。
 	//ファイル名を使って、テクスチャをロードして、ShaderResrouceViewを作成する。
 	DirectX::CreateDDSTextureFromFileEx(
@@ -35,12 +34,6 @@ Game::Game()
 	//モデルにスペキュラマップを設定する。
 	m_unityChanModelDraw.SetSpecularMap(g_specMapSRV);
 
-	//背景モデルの初期化処理。
-	m_bgModelDraw.Init(L"Assets/modelData/bg.cmo");
-	//地面をシャドウレシーバーにする。
-	m_bgModelDraw.SetShadowReciever(true);
-
-	m_bgModelDraw.SetDirectionLightColor(0, m_ligPower);
 
 	//メインとなるレンダリングターゲットを作成する。
 	m_mainRenderTarget.Create(
@@ -75,7 +68,7 @@ Game::~Game()
 void Game::InitCamera()
 {
 	g_camera3D.SetPosition({ 0.0f, 200.0f, 500.0f });
-	g_camera3D.SetTarget({ 0.0f, 100.0f, 0.0f });
+	g_camera3D.SetTarget({ 0.0f, 200.0f, 0.0f });
 	g_camera3D.Update();
 	g_camera2D.SetUpdateProjMatrixFunc(Camera::enUpdateProjMatrixFunc_Ortho);
 	g_camera2D.SetWidth(FRAME_BUFFER_W);
@@ -96,15 +89,10 @@ void Game::Update()
 	qRot.Multiply(m_ligDirection);
 	
 	m_unityChanModelDraw.SetDirectionLightDirection(0, m_ligDirection);
-	g_unityChanModelDraw_NoNormalMap.SetDirectionLightDirection(0, m_ligDirection);
-	m_bgModelDraw.SetDirectionLightDirection(0, m_ligDirection);
 
-	m_unityChanModelDraw.Update({ 150.0f, 0.0f, 0.0f });
-	g_unityChanModelDraw_NoNormalMap.Update({ -150.0f, 0.0f, 0.0f });
 	//シャドウキャスターを登録。
 	m_shadowMap.RegistShadowCaster(&m_unityChanModelDraw);
-	m_shadowMap.RegistShadowCaster(&g_unityChanModelDraw_NoNormalMap);
-	m_shadowMap.RegistShadowCaster(&m_bgModelDraw);
+
 	//シャドウマップを更新。
 	m_shadowMap.UpdateFromLightTarget(
 		{ 1000.0f, 1000.0f, 1000.0f },
@@ -128,22 +116,13 @@ void Game::ForwordRender()
 	float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	m_mainRenderTarget.ClearRenderTarget(clearColor);
 
-	m_bgModelDraw.Draw(
-		enRenderMode_Normal,
-		g_camera3D.GetViewMatrix(),
-		g_camera3D.GetProjectionMatrix()
-	);
+
 	m_unityChanModelDraw.Draw(
 		enRenderMode_Normal,
 		g_camera3D.GetViewMatrix(),
 		g_camera3D.GetProjectionMatrix()
 	);
 
-	g_unityChanModelDraw_NoNormalMap.Draw(
-		enRenderMode_Normal,
-		g_camera3D.GetViewMatrix(),
-		g_camera3D.GetProjectionMatrix()
-	);
 }
 void Game::PostRender()
 {

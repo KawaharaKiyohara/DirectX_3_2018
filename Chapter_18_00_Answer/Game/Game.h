@@ -69,8 +69,7 @@ private:
 	RenderTarget m_mainRenderTarget;		//メインレンダリングターゲット。
 	CVector3 m_unityChanPos = { 0.0f, 0.0f, 0.0f };	//ユニティちゃんの座標。
 	C3DModelDraw m_unityChanModelDraw;		//ユニティちゃんのモデルの描画処理。。
-	C3DModelDraw g_unityChanModelDraw_NoNormalMap;	//法線マップ無しのユニティちゃんのモデルの描画処理。
-	C3DModelDraw m_bgModelDraw;				//背景のモデルの描画処理。
+
 	ShadowMap m_shadowMap;					//シャドウマップ。
 	PostEffect m_postEffect;				//ポストエフェクト。
 	Sprite m_copyMainRtToFrameBufferSprite;			//メインレンダリングターゲットに描かれた絵をフレームバッファにコピーするためのスプライト。

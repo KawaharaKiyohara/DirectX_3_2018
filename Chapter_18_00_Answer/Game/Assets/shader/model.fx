@@ -8,7 +8,7 @@
 Texture2D<float4> g_albedoTexture : register(t0);	//アルベドテクスチャ。
 Texture2D<float4> g_shadowMap : register(t1);		//todo シャドウマップ。
 Texture2D<float4> g_normalMap : register(t2);		//	法線マップ。
-Texture2D<float4> g_specularMap : register(t3);
+Texture2D<float4> g_specularMap : register(t3);		//スペキュラマップ。
 /////////////////////////////////////////////////////////////
 // SamplerState
 /////////////////////////////////////////////////////////////
@@ -36,6 +36,7 @@ static const int NUM_DIRECTION_LIG = 4;
 cbuffer LightCb : register(b1){
 	float3 dligDirection[NUM_DIRECTION_LIG];
 	float4 dligColor[NUM_DIRECTION_LIG];
+	float3 eyePos;				//カメラの視点。
 };
 
 /// <summary>
@@ -66,6 +67,7 @@ struct PSInput{
 	float2 TexCoord		: TEXCOORD0;	//UV座標。
 	float4 posInLVP		: TEXCOORD1;	//ライトビュープロジェクション空間での座標。
 	float3 tangent		: TEXCOORD2;	//接ベクトル。
+	float3 posInWorld	: TEXCOORD3;	//ワールド座標。
 };
 /// <summary>
 /// シャドウマップ用のピクセルシェーダへの入力構造体。
@@ -82,6 +84,8 @@ PSInput VSMain( VSInputNmTxVcTangent In )
 	PSInput psInput = (PSInput)0;
 	//ローカル座標系からワールド座標系に変換する。
 	float4 worldPos = mul(mWorld, In.Position);
+	//鏡面反射のためにワールド座標をピクセルシェーダーに渡す。
+	psInput.posInWorld = worldPos.xyz;
 	//ワールド座標系からカメラ座標系に変換する。
 	psInput.Position  = mul(mView, worldPos);
 	//カメラ座標系からスクリーン座標系に変換する。
@@ -108,38 +112,55 @@ PSInput VSMain( VSInputNmTxVcTangent In )
 	return psInput;
 }
 /// <summary>
-/// ピクセルシェーダーのエントリ関数。
+/// ラインバート拡散反射を計算する。
 /// </summary>
-float4 PSMain(PSInput In) : SV_Target0
+float3 CalcDiffuseLight( float3 normal )
 {
-	//albedoテクスチャからカラーをフェッチする。
-	float4 albedoColor = g_albedoTexture.Sample(g_sampler, In.TexCoord);
-	
-	//法線を計算する。
-	float3 normal = 0;
-	if(isHasNormalMap == 1){
-		//法線マップがある。
-		//法線と接ベクトルの外積を計算して、従ベクトルを計算する。
-		float3 biNormal = cross(In.Normal, In.tangent);
-		normal = g_normalMap.Sample(g_sampler, In.TexCoord);
-		//0.0～1.0の範囲になっているタンジェントスペース法線を
-		//-1.0～1.0の範囲に変換する。
-		normal =(normal * 2.0f)- 1.0f;
-		//法線をタンジェントスペースから、ワールドスペースに変換する。
-		normal = In.tangent * normal.x + biNormal * normal.y + In.Normal * normal.z;
-	}else{
-		//ない。
-		normal = In.Normal;
-	}
 	float3 lig = 0.0f;
-	//ディレクションライトの拡散反射光を計算する。
 	for (int i = 0; i < NUM_DIRECTION_LIG; i++) {
+		//ランバート拡散反射。
 		lig += max(0.0f, dot(normal * -1.0f, dligDirection[i])) * dligColor[i];
 	}
-	
+	return lig;
+}
+/// <summary>
+/// スペキュラライトを計算する。
+/// </summary>
+float3 CalcSpecularLight( float3 normal, float3 worldPos, float2 uv )
+{
+	float3 lig = 0.0f;
+	for (int i = 0; i < NUM_DIRECTION_LIG; i++) {
+		//① ライトを当てる面から視点に伸びるベクトルtoEyeDirを求める。
+		//	 視点の座標は定数バッファで渡されている。LightCbを参照するように。
+		float3 toEyeDir = normalize( eyePos - worldPos );
+		//② １で求めたtoEyeDirの反射ベクトルを求める。
+		float3 reflectEyeDir = -toEyeDir + 2 * dot( normal, toEyeDir) * normal;
+		//③ ２で求めた反射ベクトルとディレクションライトの方向との内積を取って、スペキュラの強さを計算する。
+		float t = max( 0.0f, dot( -dligDirection[i], reflectEyeDir));
+		//④ pow関数を使って、スペキュラを絞る。絞りの強さは定数バッファで渡されている。
+		//	 LightCbを参照するように。
+		float specPower =1.0f;
+		if( isHasSpecularMap ) {
+			//スペキュラマップがある。
+			specPower = g_specularMap.Sample(g_sampler, uv).r;
+		}
+		float3 specLig = pow( t, 2.0f ) * dligColor[i] * specPower *  7.0f;
+		//⑤ スペキュラ反射が求まったら、ligに加算する。
+		//鏡面反射を反射光に加算する。
+		lig += specLig;
+	}
+	return lig;
+}
+
+/// <summary>
+/// デプスシャドウマップ法を使って、影を計算する。。
+/// </summary>
+//引数にinoutをつけると参照渡しになる。
+void CalcShadow( inout float3 lig, float4 posInLvp )
+{
 	if(isShadowReciever == 1 ){	//シャドウレシーバー。
 		//LVP空間から見た時の最も手前の深度値をシャドウマップから取得する。
-		float2 shadowMapUV = In.posInLVP.xy / In.posInLVP.w;
+		float2 shadowMapUV = posInLvp.xy / posInLvp.w;
 		shadowMapUV *= float2(0.5f, -0.5f);
 		shadowMapUV += 0.5f;
 		//シャドウマップの範囲内かどうかを判定する。
@@ -150,7 +171,7 @@ float4 PSMain(PSInput In) : SV_Target0
 		) {
 			
 			///LVP空間での深度値を計算。
-			float zInLVP = In.posInLVP.z / In.posInLVP.w;
+			float zInLVP = posInLvp.z / posInLvp.w;
 			//シャドウマップに書き込まれている深度値を取得。
 			float zInShadowMap = g_shadowMap.Sample(g_sampler, shadowMapUV);
 
@@ -160,10 +181,30 @@ float4 PSMain(PSInput In) : SV_Target0
 			}
 		}
 	}
-	float4 finalColor = float4(0.0f, 0.0f, 0.0f, 1.0f);
-	finalColor.xyz = albedoColor.xyz * lig;
-	return finalColor;
 }
+/// <summary>
+/// 法線を計算する。
+/// </summary>
+float3 CalcNormal( float3 normal, float3 tangent, float2 uv )
+{
+	float3 worldSpaceNormal;
+	if(isHasNormalMap == 1){
+		//法線マップがある。
+		//法線と接ベクトルの外積を計算して、従ベクトルを計算する。
+		float3 biNormal = cross(normal, tangent);
+		float3 tangentSpaceNormal = g_normalMap.Sample(g_sampler, uv);
+		//0.0～1.0の範囲になっているタンジェントスペース法線を
+		//-1.0～1.0の範囲に変換する。
+		tangentSpaceNormal =(tangentSpaceNormal * 2.0f)- 1.0f;
+		//法線をタンジェントスペースから、ワールドスペースに変換する。
+		worldSpaceNormal = tangent * tangentSpaceNormal.x + biNormal * tangentSpaceNormal.y + normal * tangentSpaceNormal.z;
+	}else{
+		//ない。
+		worldSpaceNormal = normal;
+	}
+	return worldSpaceNormal;
+}
+
 /// <summary>
 /// シャドウマップ生成用の頂点シェーダー。
 /// </summary>
@@ -184,4 +225,32 @@ float4 PSMain_ShadowMap(PSInput_ShadowMap In) : SV_Target0
 	//射影空間でのZ値を返す。
 	return In.Position.z  / In.Position.w;
 }
+
+/// <summary>
+/// ピクセルシェーダーのエントリ関数。
+/// </summary>
+float4 PSMain(PSInput In) : SV_Target0
+{
+	//albedoテクスチャからカラーをフェッチする。
+	float4 albedoColor = g_albedoTexture.Sample(g_sampler, In.TexCoord);
+	
+	//法線を計算する。
+	float3 normal = CalcNormal( In.Normal, In.tangent, In.TexCoord );
+
+	float3 lig = 0.0f;
+	
+	//ディフューズライトを加算。
+	lig += CalcDiffuseLight( normal );
+	
+	//スペキュラライトを加算。
+	lig += CalcSpecularLight( normal, In.posInWorld, In.TexCoord );
+	
+	//デプスシャドウマップを使って影を落とす。。
+	CalcShadow( lig, In.posInLVP);
+	
+	float4 finalColor = float4(0.0f, 0.0f, 0.0f, 1.0f);
+	finalColor.xyz = albedoColor.xyz * lig;
+	return finalColor;
+}
+
 

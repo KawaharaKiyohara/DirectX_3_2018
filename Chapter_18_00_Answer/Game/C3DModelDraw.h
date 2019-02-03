@@ -1,7 +1,7 @@
 #pragma once
 
 #include "C3DModelEffect.h"
-
+#include "ConstantBufferGPU.h"
 
 const int NUM_DIRECTION_LIG = 4;
 /*!
@@ -10,6 +10,7 @@ const int NUM_DIRECTION_LIG = 4;
 struct SDirectionLight {
 	CVector4 direction[NUM_DIRECTION_LIG];		//ライトの方向。
 	CVector4 color[NUM_DIRECTION_LIG];			//ライトのカラー。
+	CVector3 eyePos;							//視点。
 };
 
 
@@ -38,7 +39,7 @@ class C3DModelDraw {
 	};
 	std::unique_ptr<DirectX::Model>		m_modelDx;				//DirectXTKが提供するモデル。
 	ID3D11Buffer*						m_cb = nullptr;			//!<定数バッファ。
-	ID3D11Buffer*						m_lightCb = nullptr;	//!<ライト用の定数バッファ。
+	ConstantBufferGPU					m_lightCbGPU;			//!<ライト用の定数バッファ。
 	SDirectionLight						m_dirLight;				//!<ディレクションライト。
 	ID3D11SamplerState* m_samplerState = nullptr;			//!<サンプラーステート。
 	CMatrix m_worldMatrix = CMatrix::Identity();			//!<ワールド行列。
