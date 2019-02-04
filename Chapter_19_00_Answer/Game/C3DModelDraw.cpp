@@ -70,10 +70,17 @@ void C3DModelDraw::Draw(EnRenderMode renderMode, CMatrix viewMatrix, CMatrix pro
 	}
 	//スペキュラマップを使用するかどうかのフラグを送る。
 	if (m_specularMapSRV != nullptr) {
-			modelFxCb.isHasSpecuraMap = true;
+		modelFxCb.isHasSpecuraMap = true;
 	}
 	else {
 		modelFxCb.isHasSpecuraMap = false;
+	}
+	//AOマップを使用するかどうかのフラグを送る。
+	if (m_aoMapSRV != nullptr) {
+		modelFxCb.isHasAoMap = true;
+	}
+	else {
+		modelFxCb.isHasAoMap = false;
 	}
 	deviceContext->UpdateSubresource(m_cb, 0, nullptr, &modelFxCb, 0, 0);
 	//ライト用の定数バッファを更新。
@@ -100,6 +107,9 @@ void C3DModelDraw::Draw(EnRenderMode renderMode, CMatrix viewMatrix, CMatrix pro
 	if (m_specularMapSRV != nullptr) {
 		//スペキュラマップが設定されていたらレジスタt3に設定する。
 		deviceContext->PSSetShaderResources(3, 1, &m_specularMapSRV);
+	}
+	if (m_aoMapSRV != nullptr) {
+		deviceContext->PSSetShaderResources(4, 1, &m_aoMapSRV);
 	}
 	m_modelDx->Draw(
 		deviceContext,

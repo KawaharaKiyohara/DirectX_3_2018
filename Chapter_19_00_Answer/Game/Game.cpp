@@ -3,18 +3,24 @@
 #include "util/Stopwatch.h"
 
 ID3D11ShaderResourceView* g_normalMapSRV = nullptr;
-//todo  ① スペキュラマップ
 ID3D11ShaderResourceView* g_specMapSRV = nullptr;
-
+//AOマップ。
+ID3D11ShaderResourceView* g_aoMapSRV = nullptr;
 Game::Game()
 {
 	//カメラを初期化。
 	InitCamera();
+
+	CVector3 ambientColor = { 0.7f, 0.7f, 0.7f };
 	//Unityちゃんのモデルを初期化。
 	m_unityChanModelDraw.Init(L"Assets/modelData/unityChan.cmo");
 	m_unityChanModelDraw.SetDirectionLightColor(0, m_ligPower);
-	m_unityChanModelDraw.SetAmbientLight({ 0.8f, 0.8f, 0.8f });
+	m_unityChanModelDraw.SetAmbientLight(ambientColor);
 	
+	m_unityChanModelDraw_NoAO.Init(L"Assets/modelData/unityChan.cmo");
+	m_unityChanModelDraw_NoAO.SetDirectionLightColor(0, m_ligPower);
+	m_unityChanModelDraw_NoAO.SetAmbientLight(ambientColor);
+
 	//Unityちゃんの法線マップをロード。
 	//ファイル名を使って、テクスチャをロードして、ShaderResrouceViewを作成する。
 	DirectX::CreateDDSTextureFromFileEx(
@@ -29,11 +35,20 @@ Game::Game()
 		D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
 		false, nullptr, &g_specMapSRV);
 
+	DirectX::CreateDDSTextureFromFileEx(
+		g_graphicsEngine->GetD3DDevice(), L"Assets/modelData/utc_ao.dds", 0,
+		D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
+		false, nullptr, &g_aoMapSRV);
+
+	
 	//モデルに法線マップを設定する。
 	m_unityChanModelDraw.SetNormalMap(g_normalMapSRV);
+	m_unityChanModelDraw_NoAO.SetNormalMap(g_normalMapSRV);
 	//モデルにスペキュラマップを設定する。
 	m_unityChanModelDraw.SetSpecularMap(g_specMapSRV);
-
+	m_unityChanModelDraw_NoAO.SetSpecularMap(g_specMapSRV);
+	//モデルにAOマップを設定する。
+	m_unityChanModelDraw.SetAOMap(g_aoMapSRV);
 
 	//メインとなるレンダリングターゲットを作成する。
 	m_mainRenderTarget.Create(
@@ -59,9 +74,11 @@ Game::~Game()
 	if (m_frameBufferDepthStencilView != nullptr) {
 		m_frameBufferDepthStencilView->Release();
 	}
-	//todo 法線マップを解放。
 	if (g_normalMapSRV != nullptr) {
 		g_normalMapSRV->Release();
+	}
+	if (g_specMapSRV != nullptr) {
+		g_specMapSRV->Release();
 	}
 }
 
@@ -89,9 +106,14 @@ void Game::Update()
 	qRot.Multiply(m_ligDirection);
 	
 	m_unityChanModelDraw.SetDirectionLightDirection(0, m_ligDirection);
-
+	m_unityChanModelDraw_NoAO.SetDirectionLightDirection(0, m_ligDirection);
+	
 	//シャドウキャスターを登録。
 	m_shadowMap.RegistShadowCaster(&m_unityChanModelDraw);
+	m_shadowMap.RegistShadowCaster(&m_unityChanModelDraw_NoAO);
+
+	m_unityChanModelDraw.Update({ 130.0f, 0.0f, 0.0f });
+	m_unityChanModelDraw_NoAO.Update({ -130.0f, 0.0f, 0.0f });
 
 	//シャドウマップを更新。
 	m_shadowMap.UpdateFromLightTarget(
@@ -118,6 +140,12 @@ void Game::ForwordRender()
 
 
 	m_unityChanModelDraw.Draw(
+		enRenderMode_Normal,
+		g_camera3D.GetViewMatrix(),
+		g_camera3D.GetProjectionMatrix()
+	);
+
+	m_unityChanModelDraw_NoAO.Draw(
 		enRenderMode_Normal,
 		g_camera3D.GetViewMatrix(),
 		g_camera3D.GetProjectionMatrix()

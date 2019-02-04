@@ -37,6 +37,7 @@ class C3DModelDraw {
 		int isShadowReciever;	//シャドウレシーバーのフラグ。
 		int isHasNormalMap;		//法線マップを保持している？
 		int isHasSpecuraMap;	//スペキュラマップを保持している？
+		int isHasAoMap;			//AOマップを保持している？
 	};
 	std::unique_ptr<DirectX::Model>		m_modelDx;				//DirectXTKが提供するモデル。
 	ID3D11Buffer*						m_cb = nullptr;			//!<定数バッファ。
@@ -47,6 +48,7 @@ class C3DModelDraw {
 	bool m_isShadowReciever = false;						//シャドウレシーバーのフラグ。
 	ID3D11ShaderResourceView* m_normalMapSRV = nullptr;		//線マップのSRV
 	ID3D11ShaderResourceView* m_specularMapSRV = nullptr;	//スペキュラマップのSRV
+	ID3D11ShaderResourceView* m_aoMapSRV = nullptr;			//AOマップ。
 public:
 	//デストラクタ。
 	/// <summary>
@@ -151,6 +153,14 @@ public:
 	void SetSpecularMap(ID3D11ShaderResourceView* srv)
 	{
 		m_specularMapSRV = srv;
+	}
+	/// <summary>
+	/// AOマップを設定。
+	/// </summary>
+	/// <param name="srv"></param>
+	void SetAOMap(ID3D11ShaderResourceView* srv)
+	{
+		m_aoMapSRV = srv;
 	}
 private:
 	//ディレクションライトの初期化。

@@ -9,6 +9,8 @@ Texture2D<float4> g_albedoTexture : register(t0);	//アルベドテクスチャ。
 Texture2D<float4> g_shadowMap : register(t1);		//todo シャドウマップ。
 Texture2D<float4> g_normalMap : register(t2);		//	法線マップ。
 Texture2D<float4> g_specularMap : register(t3);		//スペキュラマップ。
+Texture2D<float4> g_aoMap : register(t4);			//AOマップ。
+
 /////////////////////////////////////////////////////////////
 // SamplerState
 /////////////////////////////////////////////////////////////
@@ -27,6 +29,7 @@ cbuffer ModelFxConstantBuffer : register(b0){
 	int isShadowReciever	: packoffset(c20.x);	//シャドウレシーバーフラグ。
 	int isHasNormalMap		: packoffset(c20.y);	//法線マップある？
 	int isHasSpecularMap	: packoffset(c20.z);	//スペキュラマップある？
+	int isHasAoMap		    : packoffset(c20.w);	//AOマップある？
 };
 static const int NUM_DIRECTION_LIG = 4;
 
@@ -140,12 +143,12 @@ float3 CalcSpecularLight( float3 normal, float3 worldPos, float2 uv )
 		float t = max( 0.0f, dot( -dligDirection[i], reflectEyeDir));
 		//④ pow関数を使って、スペキュラを絞る。絞りの強さは定数バッファで渡されている。
 		//	 LightCbを参照するように。
-		float specPower =1.0f;
+		float3 specColor =1.0f;
 		if( isHasSpecularMap ) {
 			//スペキュラマップがある。
-			specPower = g_specularMap.Sample(g_sampler, uv).r;
+			specColor = g_specularMap.Sample(g_sampler, uv).r;
 		}
-		float3 specLig = pow( t, 2.0f ) * dligColor[i] * specPower *  7.0f;
+		float3 specLig = pow( t, 2.0f ) * specColor * dligColor[i] * 7.0f;
 		//⑤ スペキュラ反射が求まったら、ligに加算する。
 		//鏡面反射を反射光に加算する。
 		lig += specLig;
@@ -205,6 +208,14 @@ float3 CalcNormal( float3 normal, float3 tangent, float2 uv )
 	}
 	return worldSpaceNormal;
 }
+float3 CalcAmbientLight( float4 albedoColor, float2 uv )
+{
+	float3 ao = 1.0f;
+	if( isHasAoMap ){
+		ao = g_aoMap.Sample(g_sampler, uv ).xyz;
+	}
+	return albedoColor.xyz * ambientLight * ao;
+}
 
 /// <summary>
 /// シャドウマップ生成用の頂点シェーダー。
@@ -226,7 +237,7 @@ float4 PSMain_ShadowMap(PSInput_ShadowMap In) : SV_Target0
 	//射影空間でのZ値を返す。
 	return In.Position.z  / In.Position.w;
 }
-
+ 
 /// <summary>
 /// ピクセルシェーダーのエントリ関数。
 /// </summary>
@@ -247,8 +258,7 @@ float4 PSMain(PSInput In) : SV_Target0
 	lig += CalcSpecularLight( normal, In.posInWorld, In.TexCoord );
 	
 	//アンビエントライトを加算。
-	//albedColorは模様を表す
-	lig += albedoColor * ambientLight;
+	lig += CalcAmbientLight( albedoColor, In.TexCoord );
 	
 	//デプスシャドウマップを使って影を落とす。。
 	CalcShadow( lig, In.posInLVP);
