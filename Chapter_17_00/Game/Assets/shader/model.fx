@@ -123,9 +123,18 @@ float4 PSMain(PSInput In) : SV_Target0
 		//法線マップはg_normalMapに設定されている。
 		//プログラムはここに追加するだけでよい。
 		
-		
-		
-		
+		//①従法線を計算する
+		//	外積を使う。
+		//	例)
+		//	float3 VC = cross( VA, VB );
+		//②従法線を正規化する。
+		//	VC = normalize(VC);
+		float3 biNormal = cross( In.Normal, In.tangent ) ;
+		biNormal = normalize( biNormal );
+		normal = g_normalMap.Sample(g_sampler, In.TexCoord);
+		normal = In.tangent * normal.x 
+				+ biNormal * normal.y 
+				+ In.Normal * normal.z;
 	}else{
 		//ない。
 		normal = In.Normal;

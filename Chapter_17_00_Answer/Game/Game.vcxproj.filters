@@ -230,8 +230,6 @@
     </MeshContentTask>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Assets\modelData\utc_nomal.tga">
-      <Filter>Assets\modelData</Filter>
-    </Image>
+    <ImageContentTask Include="Assets\modelData\utc_nomal.tga" />
   </ItemGroup>
 </Project>

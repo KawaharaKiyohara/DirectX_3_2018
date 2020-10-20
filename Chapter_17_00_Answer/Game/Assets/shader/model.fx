@@ -114,7 +114,7 @@ float4 PSMain(PSInput In) : SV_Target0
 	float4 albedoColor = g_albedoTexture.Sample(g_sampler, In.TexCoord);
 	
 	//法線を計算する。
-	float3 normal = 0;
+	float3 normal = 0.0f;
 	if(isHasNormalMap == 1){
 		//法線マップがある。
 		//法線と接ベクトルの外積を計算して、従ベクトルを計算する。

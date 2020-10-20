@@ -14,19 +14,19 @@ Game::Game()
 
 	g_unityChanModelDraw_NoNormalMap.Init(L"Assets/modelData/unityChan.cmo");
 	g_unityChanModelDraw_NoNormalMap.SetDirectionLightColor(0, m_ligPower);
-		//Unityちゃんの法線マップをロード。
-		//ファイル名を使って、テクスチャをロードして、ShaderResrouceViewを作成する。
-		DirectX::CreateDDSTextureFromFileEx(
-			g_graphicsEngine->GetD3DDevice(), 
-			L"Assets/modelData/utc_nomal.dds",	//ロードするテクスチャのパス。
-			0,
-			D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 
-			0, 
-			0,
-			false, 
-			nullptr, 
-			&g_normalMapSRV						//作成されたSRVのアドレスの格納先。
-		);
+	//Unityちゃんの法線マップをロード。
+	//ファイル名を使って、テクスチャをロードして、ShaderResrouceViewを作成する。
+	DirectX::CreateDDSTextureFromFileEx(
+		g_graphicsEngine->GetD3DDevice(), 
+		L"Assets/modelData/utc_nomal.dds",	//ロードするテクスチャのパス。
+		0,
+		D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 
+		0, 
+		0,
+		false, 
+		nullptr, 
+		&g_normalMapSRV						//作成されたSRVのアドレスの格納先。
+	);
 
 	//モデルに法線マップを設定する。
 	m_unityChanModelDraw.SetNormalMap(g_normalMapSRV);
