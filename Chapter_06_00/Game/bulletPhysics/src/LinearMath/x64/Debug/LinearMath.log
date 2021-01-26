@@ -1,1 +1,17 @@
-﻿
+﻿cl : コマンド ライン warning D9002: 不明なオプション '/arch:SSE' を無視します。
+  btAlignedAllocator.cpp
+  btConvexHull.cpp
+  btConvexHullComputer.cpp
+  btGeometryUtil.cpp
+  btPolarDecomposition.cpp
+  btQuickprof.cpp
+  btSerializer.cpp
+  btVector3.cpp
+D:\Github\DirectX_3_2018\Chapter_06_00\Game\bulletPhysics\src\LinearMath\btVector3.cpp(179,60): warning C4267: '=': 'size_t' から 'long' に変換しました。データが失われているかもしれません。
+D:\Github\DirectX_3_2018\Chapter_06_00\Game\bulletPhysics\src\LinearMath\btVector3.cpp(184,21): warning C4267: '-=': 'size_t' から 'unsigned long' に変換しました。データが失われているかもしれません。
+D:\Github\DirectX_3_2018\Chapter_06_00\Game\bulletPhysics\src\LinearMath\btVector3.cpp(427,56): warning C4267: '=': 'size_t' から 'long' に変換しました。データが失われているかもしれません。
+D:\Github\DirectX_3_2018\Chapter_06_00\Game\bulletPhysics\src\LinearMath\btVector3.cpp(564,60): warning C4267: '=': 'size_t' から 'long' に変換しました。データが失われているかもしれません。
+D:\Github\DirectX_3_2018\Chapter_06_00\Game\bulletPhysics\src\LinearMath\btVector3.cpp(569,21): warning C4267: '-=': 'size_t' から 'unsigned long' に変換しました。データが失われているかもしれません。
+D:\Github\DirectX_3_2018\Chapter_06_00\Game\bulletPhysics\src\LinearMath\btVector3.cpp(815,56): warning C4267: '=': 'size_t' から 'long' に変換しました。データが失われているかもしれません。
+  コードを生成中...
+  LinearMath.vcxproj -> D:\Github\DirectX_3_2018\Chapter_06_00\x64\Debug\LinearMath_Debug.lib

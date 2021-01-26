@@ -116,15 +116,20 @@ float4 PSMain(PSInput In) : SV_Target0
 		shadowMapUV *= float2(0.5f, -0.5f);
 		shadowMapUV += 0.5f;
 		//シャドウマップの範囲内かどうかを判定する。
-				
-		///LVP空間での深度値を計算。
-		float zInLVP = In.posInLVP.z / In.posInLVP.w;
-		//シャドウマップに書き込まれている深度値を取得。
-		float zInShadowMap = g_shadowMap.Sample(g_sampler, shadowMapUV);
+		if (shadowMapUV.x < 1.0f
+			&& shadowMapUV.x > 0.0f
+			&& shadowMapUV.y < 1.0f
+			&& shadowMapUV.y > 0.0f
+			) {
+			///LVP空間での深度値を計算。
+			float zInLVP = In.posInLVP.z / In.posInLVP.w;
+			//シャドウマップに書き込まれている深度値を取得。
+			float zInShadowMap = g_shadowMap.Sample(g_sampler, shadowMapUV);
 
-		if (zInLVP > zInShadowMap + 0.01f) {
-			//影が落ちているので、光を弱くする
-			lig *= 0.5f;
+			if (zInLVP > zInShadowMap + 0.01f) {
+				//影が落ちているので、光を弱くする
+				lig *= 0.5f;
+			}
 		}
 	}
 	float4 finalColor = float4(0.0f, 0.0f, 0.0f, 1.0f);

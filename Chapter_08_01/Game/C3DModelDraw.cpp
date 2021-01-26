@@ -50,7 +50,6 @@ void C3DModelDraw::Draw(int renderMode)
 	auto deviceContext = g_graphicsEngine->GetD3DDeviceContext();
 	DirectX::CommonStates state(g_graphicsEngine->GetD3DDevice());
 
-
 	//定数バッファを更新。
 	SVSConstantBuffer vsCb;
 	vsCb.mWorld = m_worldMatrix;

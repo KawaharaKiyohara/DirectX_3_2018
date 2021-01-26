@@ -30,7 +30,7 @@ void C3DModelEffect::InitSilhouettoDepthStepsilState()
 	//作成する深度ステンシルステートの定義を設定していく。
 	D3D11_DEPTH_STENCIL_DESC desc = { 0 };
 	desc.DepthEnable = true;						   //Zテストが有効。
-	desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO; //ZバッファにZ値を描き込まない。
+	desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL; //ZバッファにZ値を描き込まない。
 	desc.DepthFunc = D3D11_COMPARISON_GREATER;		   //Z値が大きければフレームバッファに描き込む。
 
 	pd3d->CreateDepthStencilState(&desc, &m_silhouettoDepthStepsilState);

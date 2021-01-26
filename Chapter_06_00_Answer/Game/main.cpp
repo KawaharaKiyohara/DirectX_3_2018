@@ -59,9 +59,9 @@ public:
 	}
 };
 /*!
-*@brief
-*  3Dモデル描画クラス。
-*/
+ *@brief
+ *  3Dモデル描画クラス。
+ */
 class C3DModelDraw {
 	//定数バッファ。
 	struct SVSConstantBuffer {
@@ -135,9 +135,17 @@ public:
 	{
 		//ファイル名を使って、テクスチャをロードして、ShaderResrouceViewを作成する。
 		HRESULT hr = DirectX::CreateDDSTextureFromFileEx(
-			g_graphicsEngine->GetD3DDevice(), L"Assets/modelData/utc_all2_gray.dds", 0,
-			D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
-			false, nullptr, &m_grayTextureSRV);
+			g_graphicsEngine->GetD3DDevice(),
+			L"Assets/modelData/utc_all2_gray.dds", 
+			0,
+			D3D11_USAGE_DEFAULT, 
+			D3D11_BIND_SHADER_RESOURCE, 
+			0, 
+			0,
+			false, 
+			nullptr, 
+			&m_grayTextureSRV
+		);
 	}
 	//サンプラステートの初期化。
 	void InitSamplerState()
@@ -173,8 +181,10 @@ public:
 		d3dDevice->CreateBuffer(&bufferDesc, NULL, &m_cb);
 
 		//ピクセルシェーダー用の定数バッファを作成する。
-		bufferDesc.ByteWidth = 16;		//4バイトしか転送しないので、最低限のバッファサイズの16でええやろ。
+		//4バイトしか転送しないので、最低限のバッファサイズの16。
+		bufferDesc.ByteWidth = 16;		
 		d3dDevice->CreateBuffer(&bufferDesc, NULL, &m_psCb);
+		
 	}
 	void Update()
 	{
@@ -187,10 +197,20 @@ public:
 		//グレースケールレートを決めるための種。
 		static float grayScaleRateSeed = 0.0f;
 		grayScaleRateSeed += 0.05f;
-		float grayScaleRate = sin(grayScaleRateSeed);	//sin値は-1～1の範囲を返してくる。
-		grayScaleRate = grayScaleRate * 0.5f + 0.5f;	//grayScaleRateの値を0.0～1.0の範囲に変更する。
+		//sin値は-1～1の範囲を返してくる。
+		float grayScaleRate = sin(grayScaleRateSeed);
+		//grayScaleRateの値を0.0～1.0の範囲に変更する。
+		grayScaleRate = 0.0f;// rayScaleRate * 0.5f + 0.5f;
+		
 		//定数バッファを更新。
-		deviceContext->UpdateSubresource(m_psCb, 0, nullptr, &grayScaleRate, 0, 0);
+		deviceContext->UpdateSubresource(
+			m_psCb, 
+			0, 
+			nullptr, 
+			&grayScaleRate, 
+			0, 
+			0
+		);
 		deviceContext->PSSetConstantBuffers(0, 1, &m_psCb);
 		//単位マトリクス。
 		CMatrix mWorld = CMatrix::Identity();
@@ -206,7 +226,11 @@ public:
 		deviceContext->PSSetSamplers(0, 1, &m_samplerState);
 		//アルベドテクスチャを設定する。
 		deviceContext->PSSetShaderResources(0, 1, &m_albedoTextureSRV);
-		deviceContext->PSSetShaderResources(1, 1, &m_grayTextureSRV);
+		deviceContext->PSSetShaderResources(
+			1, 
+			1, 
+			&m_grayTextureSRV
+		);
 		m_modelDx->Draw(
 			deviceContext,
 			state,

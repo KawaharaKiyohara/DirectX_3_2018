@@ -1,1 +1,65 @@
-﻿
+﻿cl : コマンド ライン warning D9002: 不明なオプション '/arch:SSE' を無視します。
+  btKinematicCharacterController.cpp
+  btConeTwistConstraint.cpp
+D:\Github\DirectX_3_2018\Chapter_06_00\Game\bulletPhysics\src\BulletDynamics\ConstraintSolver\btConeTwistConstraint.cpp(868,21): warning C4244: '=': 'double' から 'btScalar' への変換です。データが失われる可能性があります。
+D:\Github\DirectX_3_2018\Chapter_06_00\Game\bulletPhysics\src\BulletDynamics\ConstraintSolver\btConeTwistConstraint.cpp(913,20): warning C4244: '=': 'double' から 'float' への変換です。データが失われる可能性があります。
+D:\Github\DirectX_3_2018\Chapter_06_00\Game\bulletPhysics\src\BulletDynamics\ConstraintSolver\btConeTwistConstraint.cpp(973,13): warning C4244: '=': 'double' から 'btScalar' への変換です。データが失われる可能性があります。
+D:\Github\DirectX_3_2018\Chapter_06_00\Game\bulletPhysics\src\BulletDynamics\ConstraintSolver\btConeTwistConstraint.cpp(975,8): warning C4244: '=': 'double' から 'btScalar' への変換です。データが失われる可能性があります。
+  btContactConstraint.cpp
+D:\Github\DirectX_3_2018\Chapter_06_00\Game\bulletPhysics\src\BulletDynamics\ConstraintSolver\btContactConstraint.h(25,28): warning C4359: 'btContactConstraint': アライメント指定子は実際のアラインメント (128) より小さいため、無視されます。
+  btFixedConstraint.cpp
+  btGearConstraint.cpp
+  btGeneric6DofConstraint.cpp
+  btGeneric6DofSpring2Constraint.cpp
+D:\Github\DirectX_3_2018\Chapter_06_00\Game\bulletPhysics\src\BulletDynamics\ConstraintSolver\btGeneric6DofSpring2Constraint.cpp(786,24): warning C4244: '初期化中': 'double' から 'btScalar' への変換です。データが失われる可能性があります。
+  btGeneric6DofSpringConstraint.cpp
+  btHinge2Constraint.cpp
+  btHingeConstraint.cpp
+  btNNCGConstraintSolver.cpp
+  btPoint2PointConstraint.cpp
+  btSequentialImpulseConstraintSolver.cpp
+  btSliderConstraint.cpp
+  btSolve2LinearConstraint.cpp
+  btTypedConstraint.cpp
+  btUniversalConstraint.cpp
+  btDiscreteDynamicsWorld.cpp
+D:\Github\DirectX_3_2018\Chapter_06_00\Game\bulletPhysics\src\BulletDynamics\ConstraintSolver\btContactConstraint.h(25,28): warning C4359: 'btContactConstraint': アライメント指定子は実際のアラインメント (128) より小さいため、無視されます。
+  btRigidBody.cpp
+  btSimpleDynamicsWorld.cpp
+  コードを生成中...
+  コンパイル中...
+  btMultiBody.cpp
+  btMultiBodyConstraint.cpp
+  btMultiBodyConstraintSolver.cpp
+  btMultiBodyDynamicsWorld.cpp
+  btMultiBodyJointLimitConstraint.cpp
+D:\Github\DirectX_3_2018\Chapter_06_00\Game\bulletPhysics\src\BulletDynamics\Featherstone\btMultiBodyJointLimitConstraint.cpp(114,22): warning C4244: '初期化中': 'int' から 'btScalar' への変換です。データが失われる可能性があります。
+  btMultiBodyJointMotor.cpp
+  btMultiBodyPoint2Point.cpp
+  btDantzigLCP.cpp
+D:\Github\DirectX_3_2018\Chapter_06_00\Game\bulletPhysics\src\BulletDynamics\MLCPSolvers\btDantzigLCP.cpp(1568,5): warning C4473: 'printf': 書式文字列として渡された引数が不足しています
+D:\Github\DirectX_3_2018\Chapter_06_00\Game\bulletPhysics\src\BulletDynamics\MLCPSolvers\btDantzigLCP.cpp(1568,5): message : プレースホルダーとそのパラメーターには 2 の可変個引数が必要ですが、1 が指定されています。
+D:\Github\DirectX_3_2018\Chapter_06_00\Game\bulletPhysics\src\BulletDynamics\MLCPSolvers\btDantzigLCP.cpp(1568,5): message : 不足している可変個引数 2 が書式文字列 '% s' に必要です
+  btLemkeAlgorithm.cpp
+D:\Github\DirectX_3_2018\Chapter_06_00\Game\bulletPhysics\src\LinearMath\btMatrixX.h(109,18): warning C4244: '=': 'double' から 'T' への変換です。データが失われる可能性があります。
+          with
+          [
+              T=float
+          ]
+D:\Github\DirectX_3_2018\Chapter_06_00\Game\bulletPhysics\src\LinearMath\btMatrixX.h(71): message : クラス テンプレート メンバー関数 'T btVectorX<T>::nrm2(void) const' のコンパイル中
+          with
+          [
+              T=float
+          ]
+D:\Github\DirectX_3_2018\Chapter_06_00\Game\bulletPhysics\src\BulletDynamics\MLCPSolvers\btLemkeAlgorithm.cpp(251): message : コンパイル対象の関数 テンプレート インスタンス化 'T btVectorX<T>::nrm2(void) const' のリファレンスを確認してください
+          with
+          [
+              T=float
+          ]
+D:\Github\DirectX_3_2018\Chapter_06_00\Game\bulletPhysics\src\BulletDynamics\MLCPSolvers\btLemkeAlgorithm.h(86): message : コンパイル対象の クラス テンプレート インスタンス化 'btVectorX<float>' のリファレンスを確認してください
+  btMLCPSolver.cpp
+  btRaycastVehicle.cpp
+D:\Github\DirectX_3_2018\Chapter_06_00\Game\bulletPhysics\src\BulletDynamics\ConstraintSolver\btContactConstraint.h(25,28): warning C4359: 'btContactConstraint': アライメント指定子は実際のアラインメント (128) より小さいため、無視されます。
+  btWheelInfo.cpp
+  コードを生成中...
+  BulletDynamics.vcxproj -> D:\Github\DirectX_3_2018\Chapter_06_00\x64\Debug\BulletDynamics_Debug.lib

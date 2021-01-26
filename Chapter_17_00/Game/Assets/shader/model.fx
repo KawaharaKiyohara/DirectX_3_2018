@@ -129,12 +129,7 @@ float4 PSMain(PSInput In) : SV_Target0
 		//	float3 VC = cross( VA, VB );
 		//áAè]ñ@ê¸Çê≥ãKâªÇ∑ÇÈÅB
 		//	VC = normalize(VC);
-		float3 biNormal = cross( In.Normal, In.tangent ) ;
-		biNormal = normalize( biNormal );
-		normal = g_normalMap.Sample(g_sampler, In.TexCoord);
-		normal = In.tangent * normal.x 
-				+ biNormal * normal.y 
-				+ In.Normal * normal.z;
+		
 	}else{
 		//Ç»Ç¢ÅB
 		normal = In.Normal;

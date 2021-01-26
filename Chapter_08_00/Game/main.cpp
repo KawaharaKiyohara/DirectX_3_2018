@@ -95,14 +95,15 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		}
 		//Chapter 8.1.2 Hands-On •`‰æ‚·‚é‡”Ô‚ğ•Ï‚¦‚é‚±‚Æ‚Å³‚µ‚­•`‰æ‚³‚ê‚é‚±‚Æ‚ğŠm”F‚·‚éB
 
-		//è‘O‚É•`‰æB
-		modelDraw1.Update(pos1);
-		modelDraw1.Draw();
-
+		
 		//‰œ‚É•`‰æB
 		modelDraw2.Update(pos2);
 		modelDraw2.Draw();
 		
+		//è‘O‚É•`‰æB
+		modelDraw1.Update(pos1);
+		modelDraw1.Draw();
+
 		//•`‰æI—¹B
 		g_graphicsEngine->EndRender();
 	}

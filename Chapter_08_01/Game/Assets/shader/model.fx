@@ -79,5 +79,5 @@ float4 PSMain( PSInput In ) : SV_Target0
 //--------------------------------------------------------------------------------------
 float4 PSMain_Silhouette( PSInput In ) : SV_Target0
 {
-	return float4( 0.5f, 0.5f, 0.5f, 1.0f);
+	return float4( 0.5f, 0.0f, 0.0f, 1.0f);
 }
